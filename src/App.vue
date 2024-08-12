@@ -36,6 +36,15 @@
 		}
 	};
 
+	const fetchFavorites = async () => {
+		try {
+			const {data} = await axios.get("https://817726d7a4da3a81.mokky.dev/favorites");
+			items.value = data;
+		} catch(err){
+			console.log(err);
+		}
+	};
+
 	onMounted(fetchQuery);
 
 	watch(filters, fetchQuery);
