@@ -30,7 +30,11 @@
 			const {data} = await axios.get("https://817726d7a4da3a81.mokky.dev/items", 
 				{params});
 
-			items.value = data;
+			items.value = data.map((obj) => ({
+				...obj,
+				isFavorite: false,
+				isAdded: false
+			}));
 		} catch(err){
 			console.log(err);
 		}
@@ -38,14 +42,29 @@
 
 	const fetchFavorites = async () => {
 		try {
-			const {data} = await axios.get("https://817726d7a4da3a81.mokky.dev/favorites");
-			items.value = data;
+			const {data: favorites} = await axios.get("https://817726d7a4da3a81.mokky.dev/favorites");
+			items.value = items.value.map(item =>{
+				const favorite = favorites.find(favorite => favorite.parentId === item.id);
+				
+				if(!favorite){
+					return item;
+				}
+
+				return {
+					...item,
+					isFavorite: true,
+					favoriteId: favorite.id
+				}
+			});
 		} catch(err){
 			console.log(err);
 		}
 	};
 
-	onMounted(fetchQuery);
+	onMounted(async () => {
+		await fetchQuery();
+		await fetchFavorites();
+	});
 
 	watch(filters, fetchQuery);
 
