@@ -1,6 +1,5 @@
-
 <script setup>
-	import { onMounted, ref, reactive, watch, provide } from "vue";
+	import { onMounted, ref, reactive, watch } from "vue";
 	import axios from "axios";
 
 	import myHeader from "./components/myHeader.vue";
@@ -67,12 +66,9 @@
 	});
 
 	watch(filters, fetchQuery);
-	
 	const addToFavorite = async (item) => {
 		item.isFavorite = !item.isFavorite;
-	}
-
-	provide("addToFavorite", addToFavorite);
+	};
 </script>
 
 
@@ -97,7 +93,7 @@
 				</div>
 			</div>
 			<div class="mt-10">
-				<CardList :items="items"/>
+				<CardList @addToFavorite="addToFavorite" :items="items"/>
 			</div>
 		</div>
 	</div>
