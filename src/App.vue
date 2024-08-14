@@ -8,6 +8,8 @@
 	import Drawer from "./components/Drawer.vue";
 
 	const items = ref([]);
+
+	
 	const filters = reactive({sortBy: "title", searchQuery: ""});
 
 	const onChangeSelect = (event) => {
@@ -73,12 +75,16 @@
 					const obj = {
 						parentId: item.id
 					};
-					const {data} = await axios.post("https://817726d7a4da3a81.mokky.dev/favorites", obj);
 					item.isFavorite = true;
+					
+					const {data} = await axios.post("https://817726d7a4da3a81.mokky.dev/favorites", obj);
+					
 					item.favoriteId = data.id;
 				} else {
-					await axios.delete("https://817726d7a4da3a81.mokky.dev/favorites/" + item.favoriteId);
 					item.isFavorite = false;
+
+					await axios.delete("https://817726d7a4da3a81.mokky.dev/favorites/" + item.favoriteId);
+					
 					item.favoriteId = null;
 				}
 			} catch(err){
@@ -93,7 +99,7 @@
 <template>
 	<div class="w-4/5 m-auto bg-white rounded-xl shadow-xl mt-14">
 		<myHeader/>
-<!--		<Drawer/> -->
+		<Drawer v-if="drawerOpen" /> 
 		<div class="p-10">
 			<div class="flex justify-between items-center">
 				<h3 class="mb-8 text-3xl text-bold">Все кроссовки</h3>
