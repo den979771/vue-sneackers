@@ -5,11 +5,8 @@
 		items: Array
 	});
 
-	const emit = defineEmits(["addToFavorite"]);
+	const emit = defineEmits(["addToFavorite", "addToCart"]);
 
-	const onClickAdd = () => {
-		alert('Добавить')
-	};
 	
 </script>
 <template>
@@ -21,10 +18,11 @@
 			:title="item.title" 
 			:image-url="item.imageUrl" 
 			:price="item.price" 
-			:onClickAdd="onClickAdd" 
+			:onClickAdd="() => emit('addToCart', item)" 
 			:onClickFavorite="() => emit('addToFavorite', item)"
 			:isFavorite="item.isFavorite" 
 			:favoriteId="item.favoriteId"
+			:isAdded="item.isAdded"
 		/>
 	</div>
 </template>

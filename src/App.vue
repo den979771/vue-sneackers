@@ -9,6 +9,8 @@
 
 	const items = ref([]);
 
+	const cart = ref([]);
+
 	const drawerOpen = ref(false);
 
 	const filters = reactive({sortBy: "title", searchQuery: ""});
@@ -79,29 +81,39 @@
 	});
 
 	watch(filters, fetchQuery);
-	const addToFavorite = async (item) => {
-//		if(!item.isFavorite){
-			try{
-				if (!item.isFavorite){
-					const obj = {
-						parentId: item.id
-					};
-					item.isFavorite = true;
-					
-					const {data} = await axios.post("https://817726d7a4da3a81.mokky.dev/favorites", obj);
-					
-					item.favoriteId = data.id;
-				} else {
-					item.isFavorite = false;
 
-					await axios.delete("https://817726d7a4da3a81.mokky.dev/favorites/" + item.favoriteId);
+	const addToCart = (item) => {
+		if(!item.isAdded){
+			cart.value.push(item);
+			item.isAdded = true;
+		} else {
+			cart.value.splice(cart.value.indexOf(item),1);
+			item.isAdded = false;
+		}
+	}
+
+
+	const addToFavorite = async (item) => {
+		try{
+			if (!item.isFavorite){
+				const obj = {
+					parentId: item.id
+				};
+				item.isFavorite = true;
+				
+				const {data} = await axios.post("https://817726d7a4da3a81.mokky.dev/favorites", obj);
 					
-					item.favoriteId = null;
-				}
-			} catch(err){
-				console.log(err);
+				item.favoriteId = data.id;
+			} else {
+				item.isFavorite = false;
+
+				await axios.delete("https://817726d7a4da3a81.mokky.dev/favorites/" + item.favoriteId);
+				
+				item.favoriteId = null;
 			}
-//		}
+		} catch(err){
+			console.log(err);
+		}
 	};
 </script>
 
@@ -127,7 +139,11 @@
 				</div>
 			</div>
 			<div class="mt-10">
-				<CardList @addToFavorite="addToFavorite" :items="items"/>
+				<CardList 
+					@addToFavorite="addToFavorite" 
+					:items="items" 
+					@addToCart="addToCart"
+				/>
 			</div>
 		</div>
 	</div>
