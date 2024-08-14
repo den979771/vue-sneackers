@@ -1,5 +1,5 @@
 <script setup>
-	import { onMounted, ref, reactive, watch } from "vue";
+	import { onMounted, ref, reactive, watch, provide } from "vue";
 	import axios from "axios";
 
 	import myHeader from "./components/myHeader.vue";
@@ -9,8 +9,19 @@
 
 	const items = ref([]);
 
-	
+	const drawerOpen = ref(false);
+
 	const filters = reactive({sortBy: "title", searchQuery: ""});
+
+	const closeDrawer = () => {
+		drawerOpen.value = false;
+	};
+	
+	const openDrawer = () => {
+		drawerOpen.value = true;
+	};
+
+	provide("cartActions", {closeDrawer, openDrawer});
 
 	const onChangeSelect = (event) => {
 		filters.sortBy = event.target.value;
@@ -98,7 +109,7 @@
 
 <template>
 	<div class="w-4/5 m-auto bg-white rounded-xl shadow-xl mt-14">
-		<myHeader/>
+		<myHeader @open-drawer="openDrawer"/>
 		<Drawer v-if="drawerOpen" /> 
 		<div class="p-10">
 			<div class="flex justify-between items-center">
