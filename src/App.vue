@@ -23,7 +23,7 @@
 		drawerOpen.value = true;
 	};
 
-	provide("cartActions", {closeDrawer, openDrawer});
+	provide("cart", {cart, closeDrawer, openDrawer});
 
 	const onChangeSelect = (event) => {
 		filters.sortBy = event.target.value;
