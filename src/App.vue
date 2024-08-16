@@ -17,6 +17,12 @@
 	
 	const vatPrice = computed(() => Math.round(totalPrice.value*0.05));
 
+	const isCreatingOrder = ref(false);
+
+	const isEmptyCart = computed(() => cart.value.length === 0);
+
+	const cartButtonDisabled = computed(() => isCreatingOrder.value || isEmptyCart.value);
+
 	const drawerOpen = ref(false);
 
 	const filters = reactive({sortBy: "title", searchQuery: ""});
@@ -87,6 +93,13 @@
 
 	watch(filters, fetchQuery);
 
+	watch(cart, () => {
+		items.value = items.value.map((item) => ({
+			...item,
+			isAdded: false
+		}));
+	});
+
 	const addToCart = (item) => {
 		cart.value.push(item);
 		item.isAdded = true;
@@ -105,6 +118,23 @@
 		}
 	}
 
+	const createOrder = async () => {
+		try{
+			isCreatingOrder.value = true;
+			const {data} = await axios.post("https://817726d7a4da3a81.mokky.dev/orders",{
+				items: cart.value,
+				totalPrice: totalPrice.value
+			});
+
+			cart.value = [];
+
+			return data;
+		}catch (err){
+			console.log(err);
+		} finally {
+			isCreatingOrder.value = false;
+		}
+	};
 
 	const addToFavorite = async (item) => {
 		try{
@@ -136,8 +166,14 @@
 
 <template>
 	<div class="w-4/5 m-auto bg-white rounded-xl shadow-xl mt-14">
-		<myHeader :total-price="totalPrice" @open-drawer="openDrawer"/>
-		<Drawer v-if="drawerOpen" :totalPrice="totalPrice" :vat-price="vatPrice" /> 
+		<myHeader :total-price="totalPrice"  @open-drawer="openDrawer"/>
+		<Drawer 
+			v-if="drawerOpen" 
+			@create-order="createOrder" 
+			:cart-button-disabled="cartButtonDisabled" 
+			:totalPrice="totalPrice" 
+			:vat-price="vatPrice" 
+		/> 
 		<div class="p-10">
 			<div class="flex justify-between items-center">
 				<h3 class="mb-8 text-3xl text-bold">Все кроссовки</h3>
